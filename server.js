@@ -1,7 +1,8 @@
 'use strict';
 // FleetPulse: predictive maintenance for connected fleets. Zero dependencies, Node 22+.
 const http = require('http'), fs = require('fs'), path = require('path'), crypto = require('crypto');
-const { DatabaseSync } = require('node:sqlite');
+let DatabaseSync;
+try { ({ DatabaseSync } = require('node:sqlite')); } catch { DatabaseSync = require('better-sqlite3'); }
 const { Store } = require('./store'), vec = require('./vector');
 
 const N = +process.env.VEHICLES || 100000, RATE = +process.env.RATE || 20000;

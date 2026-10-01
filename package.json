@@ -3,7 +3,7 @@
   "version": "1.2.0",
   "private": true,
   "engines": {
-    "node": ">=22.5.0"
+    "node": ">=18.0.0"
   },
   "scripts": {
     "start": "node --no-warnings server.js",
@@ -12,5 +12,8 @@
     "coverage": "node --no-warnings --test --test-force-exit --experimental-test-coverage test/unit.test.js test/integration.test.js",
     "load": "node --no-warnings test/load.js",
     "explain": "node --no-warnings test/explain.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^13.0.3"
   }
 }

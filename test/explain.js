@@ -1,5 +1,5 @@
 // SQL optimisation evidence: query plan and timing before/after a composite index (500K alert rows).
-const { DatabaseSync } = require('node:sqlite'); const db = new DatabaseSync(':memory:');
+let DatabaseSync; try { ({ DatabaseSync } = require('node:sqlite')); } catch { DatabaseSync = require('better-sqlite3'); } const db = new DatabaseSync(':memory:');
 db.exec('CREATE TABLE alerts(id INTEGER PRIMARY KEY AUTOINCREMENT, vehicle_id INT, fleet_id INT, ts INT, risk REAL, reason TEXT)'); db.exec('BEGIN');
 const ins = db.prepare('INSERT INTO alerts(vehicle_id,fleet_id,ts,risk,reason) VALUES(?,?,?,?,?)'); for (let i = 0; i < 500000; i++) ins.run(i % 100000, (i % 20) + 1, i, Math.random(), 'r'); db.exec('COMMIT');
 const Q = 'SELECT id,vehicle_id,risk FROM alerts WHERE fleet_id=7 ORDER BY risk DESC LIMIT 25';

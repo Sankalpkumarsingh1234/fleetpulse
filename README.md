@@ -1,6 +1,6 @@
 # FleetPulse: predictive maintenance for connected fleets
 
-Run (no Docker, no npm install; needs Node 22.5+):
+Run with Node 18+:
 
     node server.js          # then open http://localhost:3000
 
@@ -17,7 +17,7 @@ Vercel for this project: its serverless function runtime cannot keep the SQLite 
 simulator timers, or Server-Sent Events connection used by the dashboard.
 
 Logins: `manager1 / fleet123` (one fleet), `admin / admin123` (all fleets).
-Env vars: `VEHICLES=100000 RATE=20000 PORT=3000 WARM_SAMPLE=50 SEG_MS=60000 COLD_AFTER_MS=180000 RETAIN_MS=3600000`.
+Node 22.5+ uses the built-in SQLite driver; older supported Node versions use the bundled `better-sqlite3` fallback. Env vars: `VEHICLES=100000 RATE=20000 PORT=3000 WARM_SAMPLE=50 SEG_MS=60000 COLD_AFTER_MS=180000 RETAIN_MS=3600000`.
 
 ## What it does
 Simulator (100K vehicles, bursts, duplicates, out-of-order, bad payloads) -> validation -> Bloom-filter de-dup -> 8 partitions by VIN hash
