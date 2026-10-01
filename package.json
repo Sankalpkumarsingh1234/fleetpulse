@@ -14,6 +14,6 @@
     "explain": "node --no-warnings test/explain.js"
   },
   "dependencies": {
-    "better-sqlite3": "^13.0.3"
+    "better-sqlite3": "^11.10.0"
   }
 }
