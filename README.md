@@ -9,6 +9,13 @@ For deployment, run the Node server itself and expose the configured `PORT` (def
 to a static host such as GitHub Pages will show network errors because the API is not
 running there. On a VM, use `npm start` and allow inbound TCP traffic on port 3000.
 
+## Render deployment
+
+Create a new Render Blueprint from this repository. Render will use `render.yaml`,
+run `npm start`, and expose the service URL after `/health` reports `ok`. Do not use
+Vercel for this project: its serverless function runtime cannot keep the SQLite store,
+simulator timers, or Server-Sent Events connection used by the dashboard.
+
 Logins: `manager1 / fleet123` (one fleet), `admin / admin123` (all fleets).
 Env vars: `VEHICLES=100000 RATE=20000 PORT=3000 WARM_SAMPLE=50 SEG_MS=60000 COLD_AFTER_MS=180000 RETAIN_MS=3600000`.
 
