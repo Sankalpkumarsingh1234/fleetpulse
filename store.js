@@ -31,9 +31,9 @@ class Store {
     this.flush(); let moved = 0, deleted = 0;
     for (const f of this.files(this.warm)) if (f !== this.file && t - segOf(f) >= this.coldAfterMs) {
       const keep = this.lines(f).filter(l => !this.erased.has(JSON.parse(l).vin));
-      fs.writeFileSync(path.join(this.cold, path.basename(f) + '.gz'), zlib.gzipSync(keep.join('\n') + '\n')); fs.unlinkSync(f); this.dropRefs(f); moved++;
+      fs.writeFileSync(path.join(this.cold, path.basename(f) + '.gz'), zlib.gzipSync(keep.join('\n') + '\n')); fs.rmSync(f, { force: true }); this.dropRefs(f); moved++;
     }
-    for (const f of this.files(this.cold)) if (t - segOf(f) >= this.retainMs) { fs.unlinkSync(f); deleted++; }
+    for (const f of this.files(this.cold)) if (t - segOf(f) >= this.retainMs) { fs.rmSync(f, { force: true }); deleted++; }
     return { moved_to_cold: moved, deleted };
   }
   batchAnalytics(fleet = 0) { // full scan over cold + warm: O(events)

@@ -288,5 +288,5 @@ function main() {
   listen(PORT);
 }
 if (require.main === module) main();
-module.exports = { server, N, vinOf, VIN_RE, idxOf, seenBefore, model, sig, synth, feat, phys, ingest, process_, drain, simulate, stats, pubStats, parts,
+module.exports = { main, server, N, vinOf, VIN_RE, idxOf, seenBefore, model, sig, synth, feat, phys, ingest, process_, drain, simulate, stats, pubStats, parts,
   risk, alerted, evN, fleetOf, inScope, mint, verify, copilot, topRisk, buckets, db, store, eraseVehicle, vehicleView, similar };
