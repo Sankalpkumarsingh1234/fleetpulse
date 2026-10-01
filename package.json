@@ -1,0 +1,16 @@
+{
+  "name": "fleetpulse",
+  "version": "1.2.0",
+  "private": true,
+  "engines": {
+    "node": ">=22.5"
+  },
+  "scripts": {
+    "start": "node --no-warnings server.js",
+    "small": "VEHICLES=10000 RATE=5000 node --no-warnings server.js",
+    "test": "node --no-warnings --test --test-force-exit test/unit.test.js test/integration.test.js",
+    "coverage": "node --no-warnings --test --test-force-exit --experimental-test-coverage test/unit.test.js test/integration.test.js",
+    "load": "node --no-warnings test/load.js",
+    "explain": "node --no-warnings test/explain.js"
+  }
+}

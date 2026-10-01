@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FleetPulse</title>
+<style>
+:root{--bg:#e9eef2;--panel:#fff;--ink:#16222d;--mute:#5b6b7a;--line:#d3dce4;--ok:#0f766e;--warn:#d98200;--bad:#c2362b}
+@media(prefers-color-scheme:dark){:root{--bg:#10171d;--panel:#18222b;--ink:#e6edf3;--mute:#93a3b3;--line:#2b3a47;--ok:#3fb6a8;--warn:#f0a22e;--bad:#ff6b5e}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 "Segoe UI",system-ui,sans-serif}
+h1,h2{margin:0;font-weight:650}h2{font-size:1rem;margin-bottom:.5rem}
+header{display:flex;gap:1rem;align-items:center;padding:.75rem 1.25rem;background:var(--panel);border-bottom:1px solid var(--line)}
+header h1{font-size:1.25rem;letter-spacing:-.01em}header span{color:var(--mute);flex:1}
+main{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(320px,1fr);gap:1rem;padding:1rem 1.25rem}
+@media(max-width:900px){main{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:1rem}
+.strip{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:1.75rem}
+.k b{display:block;font-size:1.6rem;font-variant-numeric:tabular-nums;line-height:1.1}.k small{color:var(--mute)}
+canvas{width:100%;height:380px;display:block;border-radius:4px;background:var(--bg)}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}td,th{padding:.35rem .4rem;border-bottom:1px solid var(--line);text-align:left;font-weight:400}
+th{color:var(--mute);font-size:.85rem}tr[data-v]{cursor:pointer}tr[data-v]:hover{background:var(--bg)}
+.pill{padding:.05rem .45rem;border-radius:99px;color:#fff;font-size:.85rem}
+#alerts{max-height:210px;overflow:auto;margin:0;padding:0;list-style:none}#alerts li{padding:.35rem 0;border-bottom:1px solid var(--line)}
+#chat{height:150px;overflow:auto;white-space:pre-wrap;margin-bottom:.5rem}#chat p{margin:.2rem 0}
+input,button{font:inherit;padding:.45rem .65rem;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink)}
+button{background:var(--ink);color:var(--bg);cursor:pointer;border-color:var(--ink)}
+:focus-visible{outline:3px solid var(--warn);outline-offset:2px}
+.row{display:flex;gap:.5rem}.row input{flex:1}
+#login{position:fixed;inset:0;background:var(--bg);display:grid;place-items:center}#login form{display:grid;gap:.6rem;width:300px}
+#err{color:var(--bad);min-height:1.3em;margin:0}
+.cmp td:nth-child(n+2){text-align:right}
+[hidden]{display:none!important}
+</style></head><body>
+<div id="login"><form id="lf"><h1>FleetPulse</h1><p style="margin:0;color:var(--mute)">Sign in to see which vehicles are likely to fail this week.</p>
+<input id="u" value="manager1" aria-label="Username" autocomplete="username"><input id="p" type="password" value="fleet123" aria-label="Password" autocomplete="current-password">
+<button>Sign in</button><p id="err" role="alert"></p><small style="color:var(--mute)">Fleet manager: manager1 / fleet123<br>Admin (all fleets): admin / admin123</small></form></div>
+<header><h1>FleetPulse</h1><span id="who"></span><button id="out">Sign out</button></header>
+<main>
+<section class="panel strip" aria-live="polite">
+<div class="k"><b id="s-v">-</b><small>vehicles simulated</small></div><div class="k"><b id="s-eps">-</b><small>events/sec processed</small></div>
+<div class="k"><b id="s-p95">-</b><small>ingest to decision, p95 ms</small></div><div class="k"><b id="s-q">-</b><small>queue backlog</small></div>
+<div class="k"><b id="s-d">-</b><small>duplicates dropped</small></div><div class="k"><b id="s-a">-</b><small>alerts raised</small></div></section>
+<section class="panel"><h2>Where the risky vehicles are</h2><canvas id="map" aria-label="Map of at-risk vehicles"></canvas>
+<small style="color:var(--mute)">Dot colour = failure risk. Click a row on the right to highlight a vehicle.</small></section>
+<section class="panel"><h2>Most likely to break down in 7 days</h2>
+<table><thead><tr><th>VIN</th><th>Risk</th><th>Temp</th><th>Battery</th></tr></thead><tbody id="rows"><tr><td colspan="4">Waiting for telemetry...</td></tr></tbody></table>
+<div class="row" style="margin-top:.6rem"><button id="more">Load more</button></div></section>
+<section class="panel"><h2>Live alerts</h2><ul id="alerts"><li>No alerts yet.</li></ul></section>
+<section class="panel"><h2>Fleet copilot (read-only, every question is audited)</h2><div id="chat"></div>
+<form class="row" id="cf"><input id="qi" placeholder="Which vehicles need attention?" aria-label="Ask the copilot"><button>Ask</button></form></section>
+<section class="panel"><h2>Does the model beat a simple rule?</h2><table class="cmp"><thead><tr><th></th><th>Precision</th><th>Recall</th><th>F1</th></tr></thead><tbody id="mt"></tbody></table>
+<small style="color:var(--mute)" id="mn"></small></section>
+<section class="panel" id="detail" hidden><h2 id="dt">Vehicle detail</h2><div id="db"></div></section>
+<section class="panel"><h2>Batch analytics and storage tiers</h2><div class="row"><button id="ba">Run batch analytics</button></div><div id="bo" style="margin-top:.6rem"></div>
+<div id="erase" class="row" style="margin-top:.8rem" hidden><input id="ev" placeholder="VIN for a privacy erasure request" aria-label="VIN to erase"><button id="eb">Erase data</button></div><p id="em" role="status" style="margin:.4rem 0 0"></p></section>
+</main>
+<script src="app.js"></script></body></html>
