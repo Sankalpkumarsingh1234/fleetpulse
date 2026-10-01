@@ -276,7 +276,7 @@ function main() {
       throw err;
     });
 
-    server.listen(port, () => {
+    server.listen(port, '0.0.0.0', () => {
       const actualPort = server.address().port;
       console.log(`FleetPulse: ${N} vehicles, ~${RATE} events/s -> http://localhost:${actualPort}  (admin/admin123, manager1/fleet123)`);
       console.log('Model holdout:', JSON.stringify(model.metrics));

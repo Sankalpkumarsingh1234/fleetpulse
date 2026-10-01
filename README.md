@@ -4,6 +4,11 @@ Run (no Docker, no npm install; needs Node 22.5+):
 
     node server.js          # then open http://localhost:3000
 
+For deployment, run the Node server itself and expose the configured `PORT` (default
+`3000`). The dashboard calls `/api/*` on the same origin, so deploying only `public/`
+to a static host such as GitHub Pages will show network errors because the API is not
+running there. On a VM, use `npm start` and allow inbound TCP traffic on port 3000.
+
 Logins: `manager1 / fleet123` (one fleet), `admin / admin123` (all fleets).
 Env vars: `VEHICLES=100000 RATE=20000 PORT=3000 WARM_SAMPLE=50 SEG_MS=60000 COLD_AFTER_MS=180000 RETAIN_MS=3600000`.
 
